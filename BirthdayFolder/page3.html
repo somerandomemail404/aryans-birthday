@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hehehuhu</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #D6BFA0;
+            font-family: 'Arial', sans-serif;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #8B4513;
+            color: #D2B48C;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .header {
+            position: absolute;
+            top: 40px;
+            text-align: center;
+            color: #4A2C2A;
+            z-index: 10;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            height: 70vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .gallery-image {
+            display: none;
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            animation: slideIn 0.5s ease;
+        }
+
+        .gallery-image.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .nav-button {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(139, 69, 19, 0.8);
+            color: #D2B48C;
+            border: none;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 2rem;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+
+        .nav-button:hover {
+            background-color: rgba(139, 69, 19, 1);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .nav-button:active {
+            transform: translateY(-50%) scale(0.95);
+        }
+
+        .nav-button.prev {
+            left: -80px;
+        }
+
+        .nav-button.next {
+            right: -80px;
+        }
+
+        .nav-button:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+        }
+
+        .nav-button:disabled:hover {
+            transform: translateY(-50%) scale(1);
+        }
+
+        .progress-indicator {
+            position: absolute;
+            bottom: 30px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(139, 69, 19, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-dot.active {
+            background-color: #8B4513;
+            transform: scale(1.3);
+        }
+
+        /* Final popup */
+        .final-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .final-popup.show {
+            display: flex;
+        }
+
+        .popup-content {
+            background: linear-gradient(135deg, #FFF5F7 0%, #FFE8EC 50%, #FFD6E0 100%);
+            padding: 60px 70px;
+            border-radius: 40px;
+            text-align: center;
+            box-shadow: 0 12px 48px rgba(255, 182, 193, 0.6);
+            animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            max-width: 90%;
+            border: 4px solid #FFB6C1;
+            position: relative;
+        }
+
+        .popup-content::before {
+            content: '🎀';
+            position: absolute;
+            top: 20px;
+            left: 30px;
+            font-size: 2rem;
+            animation: twinkle 1.5s ease-in-out infinite;
+        }
+
+        .popup-content::after {
+            content: '🎀';
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 2rem;
+            animation: twinkle 1.5s ease-in-out infinite 0.75s;
+        }
+
+        @keyframes twinkle {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .popup-content h2 {
+            font-size: 3.5rem;
+            background: linear-gradient(135deg, #FF69B4, #FFB6C1, #FF1493);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 20px;
+            text-shadow: none;
+            font-weight: 900;
+            animation: rainbow 3s ease-in-out infinite;
+        }
+
+        @keyframes rainbow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(20deg); }
+        }
+
+        .popup-hearts {
+            font-size: 2rem;
+            margin: 20px 0;
+            animation: heartPulse 1.2s ease-in-out infinite;
+        }
+
+        @keyframes heartPulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.15); }
+        }
+
+        .popup-content p {
+            font-size: 1.6rem;
+            color: #8B4444;
+            margin-bottom: 30px;
+            font-weight: 600;
+            line-height: 1.6;
+        }
+
+        .close-popup {
+            background: linear-gradient(135deg, #FF69B4, #FFB6C1);
+            color: white;
+            border: none;
+            padding: 18px 50px;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(255, 105, 180, 0.4);
+            transition: all 0.3s ease;
+        }
+
+        .close-popup:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 25px rgba(255, 105, 180, 0.6);
+        }
+
+        .close-popup:active {
+            transform: scale(0.98);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes popIn {
+            from {
+                opacity: 0;
+                transform: scale(0.5);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Mobile responsiveness */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .nav-button.prev {
+                left: 10px;
+            }
+
+            .nav-button.next {
+                right: 10px;
+            }
+
+            .popup-content h2 {
+                font-size: 2rem;
+            }
+
+            .popup-content p {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='page2.html'">← Back</button>
+
+    <div class="header">
+        <h1>Umm... how about some cringy cute stuff? 🥹</h1>
+        <p>Keep swiping...</p>
+    </div>
+
+    <div class="gallery-container">
+        <button class="nav-button prev" id="prevBtn">‹</button>
+        
+        <div class="image-wrapper" id="imageWrapper">
+            <!-- Images will be loaded here -->
+        </div>
+
+        <button class="nav-button next" id="nextBtn">›</button>
+    </div>
+
+    <div class="progress-indicator" id="progressIndicator">
+        <!-- Progress dots will be created here -->
+    </div>
+
+    <!-- Final popup -->
+    <div class="final-popup" id="finalPopup">
+        <div class="popup-content">
+            <h2>Yayyyyyyy...</h2>
+            <p>I hompe this made you smile</p>
+            <button class="close-popup" onclick="window.location.href='birthday.html'">Hamppy Bumdday ˚ʚ🧸ɞ˚</button>
+        </div>
+    </div>
+
+    <script>
+        const galleryImages = [
+            'p.png',
+            'p2.png',
+            'pp.png',
+            'p5.png',
+            'p6.png',
+            'p7.png',
+            'p8.png',
+            'p9.png'
+        ];
+
+        let currentIndex = 0;
+        const imageWrapper = document.getElementById('imageWrapper');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressIndicator = document.getElementById('progressIndicator');
+        const finalPopup = document.getElementById('finalPopup');
+
+        // Create image elements
+        galleryImages.forEach((imageSrc, index) => {
+            const img = document.createElement('img');
+            img.src = imageSrc;
+            img.className = 'gallery-image';
+            img.alt = `Memory ${index + 1}`;
+            if (index === 0) {
+                img.classList.add('active');
+            }
+            imageWrapper.appendChild(img);
+        });
+
+        // Create progress dots
+        galleryImages.forEach((_, index) => {
+            const dot = document.createElement('div');
+            dot.className = 'progress-dot';
+            if (index === 0) {
+                dot.classList.add('active');
+            }
+            progressIndicator.appendChild(dot);
+        });
+
+        const images = document.querySelectorAll('.gallery-image');
+        const dots = document.querySelectorAll('.progress-dot');
+
+        function updateGallery() {
+            // Update images
+            images.forEach((img, index) => {
+                img.classList.toggle('active', index === currentIndex);
+            });
+
+            // Update dots
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('active', index === currentIndex);
+            });
+
+            // Update buttons
+            prevBtn.disabled = currentIndex === 0;
+            
+            // Hide next button on last image
+            if (currentIndex === galleryImages.length - 1) {
+                nextBtn.style.display = 'none';
+                // Show final popup
+                setTimeout(() => {
+                    finalPopup.classList.add('show');
+                }, 500);
+            } else {
+                nextBtn.style.display = 'block';
+                nextBtn.disabled = false;
+            }
+        }
+
+        function nextImage() {
+            if (currentIndex < galleryImages.length - 1) {
+                currentIndex++;
+                updateGallery();
+            }
+        }
+
+        function prevImage() {
+            if (currentIndex > 0) {
+                currentIndex--;
+                updateGallery();
+            }
+        }
+
+        prevBtn.addEventListener('click', prevImage);
+        nextBtn.addEventListener('click', nextImage);
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowLeft') {
+                prevImage();
+            } else if (e.key === 'ArrowRight') {
+                nextImage();
+            }
+        });
+
+        // Touch swipe support
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        imageWrapper.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+
+        imageWrapper.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (touchEndX < touchStartX - 50) {
+                nextImage();
+            }
+            if (touchEndX > touchStartX + 50) {
+                prevImage();
+            }
+        }
+
+        // Initialize
+        updateGallery();
+    </script>
+</body>
+</html>

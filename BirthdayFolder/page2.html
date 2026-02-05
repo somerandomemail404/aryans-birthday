@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Birthday MayMays? 💌</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #D6BFA0;
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-x: hidden;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: #4A2C2A;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            font-style: italic;
+            opacity: 0.8;
+        }
+
+        .envelopes-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 30px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .envelope-container {
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .envelope-container:hover {
+            transform: translateY(-5px);
+        }
+
+        .envelope {
+            width: 200px;
+            height: 140px;
+            position: relative;
+            background: linear-gradient(135deg, #f4e8d8 0%, #e8d5c0 100%);
+            border-radius: 4px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        /* Envelope flap */
+        .envelope::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 70px;
+            background: linear-gradient(135deg, #e8d5c0 0%, #d4c0a8 100%);
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Envelope lines decoration */
+        .envelope-lines {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+        }
+
+        .envelope-line {
+            height: 2px;
+            background: rgba(74, 44, 42, 0.2);
+            margin-bottom: 8px;
+            border-radius: 1px;
+        }
+
+        .envelope-line:nth-child(1) {
+            width: 70%;
+        }
+
+        .envelope-line:nth-child(2) {
+            width: 85%;
+        }
+
+        .envelope-line:nth-child(3) {
+            width: 60%;
+        }
+
+        /* Heart seal */
+        .heart-seal {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            z-index: 10;
+        }
+
+        .heart {
+            width: 100%;
+            height: 100%;
+            background: #FFB6C1;
+            position: relative;
+            transform: rotate(-45deg);
+            animation: heartbeat 1.2s ease-in-out infinite;
+            box-shadow: 0 2px 6px rgba(255, 182, 193, 0.5);
+        }
+
+        .heart::before,
+        .heart::after {
+            content: '';
+            width: 100%;
+            height: 100%;
+            background: #FFB6C1;
+            border-radius: 50%;
+            position: absolute;
+        }
+
+        .heart::before {
+            top: -50%;
+            left: 0;
+        }
+
+        .heart::after {
+            left: 50%;
+            top: 0;
+        }
+
+        @keyframes heartbeat {
+            0%, 100% {
+                transform: rotate(-45deg) scale(1);
+            }
+            25% {
+                transform: rotate(-45deg) scale(1.1);
+            }
+            50% {
+                transform: rotate(-45deg) scale(1);
+            }
+            75% {
+                transform: rotate(-45deg) scale(1.05);
+            }
+        }
+
+        /* Modal for displaying images */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal.show {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            position: relative;
+            max-width: 90%;
+            max-height: 90%;
+            animation: slideIn 0.4s ease;
+        }
+
+        .modal-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: -40px;
+            right: 0;
+            font-size: 2rem;
+            color: white;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.3s ease;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .back-button {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            padding: 10px 20px;
+            background-color: #8B4513;
+            color: #D2B48C;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            z-index: 100;
+        }
+
+        .back-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        /* Responsive design */
+        @media (max-width: 1200px) {
+            .envelopes-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (max-width: 900px) {
+            .envelopes-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: 20px;
+            }
+            .envelope {
+                width: 160px;
+                height: 112px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .envelopes-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+
+        .opened {
+            animation: shake 0.5s ease;
+        }
+
+        .envelope-container.visited .heart,
+        .envelope-container.visited .heart::before,
+        .envelope-container.visited .heart::after {
+            background: #FF0000;
+            box-shadow: 0 2px 6px rgba(255, 0, 0, 0.5);
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateY(-5px) rotate(0deg); }
+            25% { transform: translateY(-5px) rotate(-5deg); }
+            75% { transform: translateY(-5px) rotate(5deg); }
+        }
+
+        .all-opened-button {
+            display: none;
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 15px 30px;
+            background-color: #8B4513;
+            color: #D2B48C;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.3rem;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            animation: fadeInButton 0.5s ease;
+            z-index: 100;
+        }
+
+        .all-opened-button:hover {
+            transform: translateX(-50%) scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.4);
+        }
+
+        .all-opened-button:active {
+            transform: translateX(-50%) scale(0.98);
+        }
+
+        .all-opened-button.show {
+            display: inline-block;
+        }
+
+        @keyframes fadeInButton {
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <button class="back-button" onclick="window.location.href='birthday.html'">← Back</button>
+    
+    <button class="all-opened-button" id="allOpenedButton">Click here to get scammed 🐰</button>
+
+    <div class="header">
+        <h1>Open Your Envelopes 💌</h1>
+        <p>Click on each envelope, jaldi jaldi... make sure you check them all <b>૮ ˶ᵔ ᵕ ᵔ˶ ა</b></p>
+    </div>
+
+    <div class="envelopes-grid" id="envelopesGrid"></div>
+
+    <!-- Modal for displaying images -->
+    <div class="modal" id="imageModal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeModal">&times;</span>
+            <img id="modalImage" src="" alt="Special Memory">
+        </div>
+    </div>
+
+    <script>
+        const envelopeImages = [
+            'monster.png',  // Envelope 3
+            'flying_bear.png',  // Envelope 5
+            'closer_to_upsc.jpg',  // Envelope 2
+            'momos.png',  // Envelope 4
+            'bhonduhamster.png',  // Envelope 9
+            'candle_blow.jpg',  // Envelope 1
+            'codehamster.png',  // Envelope 6
+            'caek.png',  // Envelope 7
+            'blue.png',  // Envelope 8
+            'star.png', // Envelope 10
+            'jp.png', // Envelope 11
+            'gawk.png', // Envelope 13
+            'ideal.png', // Envelope 14
+            'panda.png',  // Envelope 15
+            'highlight.png' // Envelope 12
+        ];
+
+        const envelopesGrid = document.getElementById('envelopesGrid');
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        const closeModal = document.getElementById('closeModal');
+        const allOpenedButton = document.getElementById('allOpenedButton');
+        let openedCount = 0;
+
+        // Function to check if all envelopes are opened
+        function checkAllOpened() {
+            if (openedCount === 15) {
+                allOpenedButton.classList.add('show');
+            }
+        }
+
+        // Button click event to go to page3
+        allOpenedButton.addEventListener('click', function() {
+            window.location.href = 'page3.html';
+        });
+
+        // Create 15 envelopes
+        for (let i = 1; i <= 15; i++) {
+            const envelopeContainer = document.createElement('div');
+            envelopeContainer.className = 'envelope-container';
+            envelopeContainer.innerHTML = `
+                <div class="envelope">
+                    <div class="envelope-lines">
+                        <div class="envelope-line"></div>
+                        <div class="envelope-line"></div>
+                        <div class="envelope-line"></div>
+                    </div>
+                    <div class="heart-seal">
+                        <div class="heart"></div>
+                    </div>
+                </div>
+            `;
+
+            // Add click event to open envelope and show image
+            envelopeContainer.addEventListener('click', function() {
+                this.classList.add('opened');
+                setTimeout(() => {
+                    this.classList.remove('opened');
+                }, 500);
+
+                // Mark as visited (changes heart to red) and increment counter
+                if (!this.classList.contains('visited')) {
+                    this.classList.add('visited');
+                    openedCount++;
+                    checkAllOpened();
+                }
+
+                // Show the image in modal
+                modalImage.src = envelopeImages[i - 1];
+                modal.classList.add('show');
+            });
+
+            envelopesGrid.appendChild(envelopeContainer);
+        }
+
+        // Close modal when clicking the close button
+        closeModal.addEventListener('click', function() {
+            modal.classList.remove('show');
+        });
+
+        // Close modal when clicking outside the image
+        modal.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                modal.classList.remove('show');
+            }
+        });
+
+        // Close modal with Escape key
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                modal.classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>
